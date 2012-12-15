@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+    <!-- Sites: Tutoriel
+    http://leaflet.cloudmade.com/
+  http://leaflet.cloudmade.com/examples.html
+	-->
+	<html lang=fr-x-mtfrom-en>
+	<head>
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" /> <!--[if lte IE 8]> <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" /> <![endif]-->
+	<base href=http://leaflet.cloudmade.com/examples/quick-start-example.html />
+	<title>Geo</title>
+	<meta charset=utf-8 />
+	<meta name=viewport content="width=device-width, initial-scale=1.0">
+	<style>
+
+    #form {
+    /*margin-right: auto;
+    margin-left: auto;*/
+    /*position:absolute;*/
+    /*padding:10px 15px;*/
+    display:none;
+    background:#A2C7B3;
+    /*left: 450px;*/
+    top: 245px;
+    width : 800px;
+    height : 150px;
+    /* background:#f9fdf4; */
+    /*font-family: 'Lobster Two', cursive;*/
+    font-size:12px;
+    /*max-height:200px;*/
+    /*font-weight:bold;*/
+    /*-webkit-border-bottom-right-radius: 30px;
+    -webkit-border-bottom-left-radius: 30px;
+    -moz-border-radius-bottomright: 30px;
+    -moz-border-radius-bottomleft: 30px;
+    border-bottom-right-radius: 30px;
+    border-bottom-left-radius: 30px;*/
+    z-index:2;
+    }
+     
+	</style>		
+	
+        
+	</head>
+			
+	<body>
+		
+	<div id=map style="width: 600px; height: 400px"><!-- <div id=map style="width: 600px; height: 400px">-->
+	</div>
+    <div id=form></div>
+	<script src=http://leafletjs.com/dist/leaflet.js></script>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cartodb.s3.amazonaws.com/embed/wax.g.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+						
+	<script>
+		
+	// Créer une carte
+	var map = L.map('map');
+
+	// Ajouter une couche CloudMade
+	L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png',
+	{
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
+	}).addTo(map);
+
+	//Zoom géolocalisation
+	map.locate({setView: true, zoom: 15});
+
+	// Fonction appel à la localisation
+	function onLocationFound(e) 
+	{
+        
+        var n = prompt("What's your name ?", "Please type here");
+        var g = prompt("Write something about anything !", "Please type here");
+        chn = String(n);
+        chg = String(g);
+		// Ouvrir pop up et afficher coordonnées
+		var lng = (e.latlng.lng);
+		var chlng = lng + "";
+		var lat = (e.latlng.lat);
+		var chlat = lat + "";
+		var content = " Hello ";
+        var url = "http://enigma.cartodb.com/api/v2/sql?q=INSERT INTO enigme (the_geom, name, url) VALUES (ST_GeomFromText('POINT("+lng+" "+lat+")', 4326),'"+chn+"','"+chg+"')&api_key=1dd48db954aeb9339adb14e6deffd3e176b1d5e3" ;
+        
+        // Ajax Call
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'post',
+            //success:function(result){
+            //    $.each(result.rows,function(i, value) {
+            //    console.log(value.url);  // here you get
+            //    });
+            //},
+            error: function(e){}
+            });
+          
+          //popup
+		var point1 = new L.marker([lat, lng]).addTo(map)
+		    .bindPopup(
+            content + n +" ! "+"</br>"+
+			/*Nom*/"<p><b>You added a new point to the map</b>"+"</br>"+
+			"<center><a href= 'https://enigma.cartodb.com/tables/12397'> See the DATA </a></center>"+"</br>"+
+            "<center><a href= 'https://c9.io/pierregeo/cartodb_connect/workspace/carteData.html'> See the Map </a></center></br>"
+			).on('click', function (e) { 
+            $('#form')
+            .html("bla")
+            .animate({width: 'toggle'})
+            //.css({ height : 105, 'margin-right':150})
+            //.show("slide", { direction: "right" }, 10000);
+            });; 
+            
+	}
+	map.on('locationfound', onLocationFound);
+      
+		
+	// Fonction echec à la localisation
+	function onLocationError(e) 
+	{
+		alert(e.message);
+	}
+	map.on('locationerror', onLocationError);
+		
+			
+	var popup = L.popup();
+	//function onMapClick(e) {
+	//	popup
+	//		.setLatLng(e.latlng)
+	//		.setContent("You clicked the map at " + e.latlng.toString())
+	//		.openOn(map);
+	//	}
+
+	//map.on('click', onMapClick);
+    
+    
+
+	</script>
+	</body>
+</html>
